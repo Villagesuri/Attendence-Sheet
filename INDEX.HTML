@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Sheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: times new roman;
+            background-color:white;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color:violet;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .attendance-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .attendance-form input {
+            padding: 10px;
+            margin-right: 10px;
+            width: 200px;
+        }
+
+        .attendance-form button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .attendance-form button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: green;
+        }
+
+        button.delete {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button.delete:hover {
+            background-color: #d32f2f;
+        }
+
+        button.leave {
+            background-color: yellow;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button.leave:hover {
+            background-color: #f57c00;
+        }
+
+        button.status {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button.status.absent {
+            background-color: #f44336;
+        }
+
+        button.status.absent:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Employee Attendance Sheet</h1>
+
+        <div class="attendance-form">
+            <label for="employee-name">Employee Name:</label>
+            <input type="text" id="employee-name" placeholder="Enter Employee Name"></br></br>
+            <label for="today-work">Today's work:</label>
+            <input type="text" id="today-work" placeholder="Enter Today's Work"></br></br>
+            <button id="mark-attendance">Mark Attendance</button>
+        </div>
+
+        <h2>Attendance Records</h2>
+        <table id="attendance-table">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Date</th>
+                    <th>Visit Time</th>
+                    <th>Leave Time</th>
+                    <th>Today's Work</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Attendance records will appear here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('mark-attendance').addEventListener('click', function() {
+            const employeeName = document.getElementById('employee-name').value;
+            const todayWork = document.getElementById('today-work').value;
+            
+            // Check if employee name is entered
+            if (employeeName.trim() === "") {
+                alert("Please enter a valid employee name");
+                return;
+            }
+            
+            // Check if today work is entered
+            if (todayWork.trim() === "") {
+                alert("Please enter today's work");
+                return;
+            }
+
+            const currentDate = new Date();
+            const date = currentDate.toLocaleDateString();
+            const visitTime = currentDate.toLocaleTimeString();
+            const leaveTime = "-"; // Initially, leave time is not set
+            const status = "Present";
+
+            // Create a new table row for the attendance record
+            const newRow = document.createElement('tr');
+
+            // Create cells for the employee's data
+            const nameCell = document.createElement('td');
+            nameCell.textContent = employeeName;
+
+            const dateCell = document.createElement('td');
+            dateCell.textContent = date;
+
+            const visitTimeCell = document.createElement('td');
+            visitTimeCell.textContent = visitTime;
+
+            const leaveTimeCell = document.createElement('td');
+            leaveTimeCell.textContent = leaveTime;
+
+            const tworkCell = document.createElement('td');
+            tworkCell.textContent = todayWork;
+
+            const statusCell = document.createElement('td');
+            statusCell.textContent = status;
+
+            const actionCell = document.createElement('td');
+
+            // 1. Leave Time Button
+            const leaveButton = document.createElement('button');
+            leaveButton.textContent = "Leave Time";
+            leaveButton.classList.add('leave');
+            leaveButton.addEventListener('click', function() {
+                markLeaveTime(newRow);
+            });
+
+            // 2. Present/Absent Button
+            const statusButton = document.createElement('button');
+            statusButton.textContent = "Present";
+            statusButton.classList.add('status');
+            statusButton.addEventListener('click', function() {
+                toggleStatus(statusButton, newRow);
+            });
+
+            // 3. Delete Button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Delete";
+            deleteButton.classList.add('delete');
+            deleteButton.addEventListener('click', function() {
+                newRow.remove();
+            });
+
+            actionCell.appendChild(leaveButton);
+            actionCell.appendChild(statusButton);
+            actionCell.appendChild(deleteButton);
+
+            // Append the cells to the new row
+            newRow.appendChild(nameCell);
+            newRow.appendChild(dateCell);
+            newRow.appendChild(visitTimeCell);
+            newRow.appendChild(leaveTimeCell);
+            newRow.appendChild(tworkCell);
+            newRow.appendChild(statusCell);
+            newRow.appendChild(actionCell);
+
+            // Append the new row to the table
+            document.querySelector('#attendance-table tbody').appendChild(newRow);
+
+            // Clear the input field after submitting
+            document.getElementById('employee-name').value = "";
+            document.getElementById('today-work').value = "";
+        });
+
+        // Function to mark leave time
+        function markLeaveTime(row) {
+            const currentTime = new Date().toLocaleTimeString();
+            const leaveTimeCell = row.cells[3]; // Get the leave time cell
+            leaveTimeCell.textContent = currentTime;
+        }
+
+        // Function to toggle status (Present/Absent)
+        function toggleStatus(button, row) {
+            const statusCell = row.cells[5]; // Get the status cell
+
+            if (statusCell.textContent === "Present") {
+                statusCell.textContent = "Absent";
+                button.textContent = "Absent";
+                button.classList.add('absent');
+            } else {
+                statusCell.textContent = "Present";
+                button.textContent = "Present";
+                button.classList.remove('absent');
+            }
+        }
+    </script>
+</body>
+</html>
